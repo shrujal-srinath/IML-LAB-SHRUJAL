@@ -1,0 +1,59 @@
+def calc_wma(k, prices, i):
+    weights = [1, 2, 3, 4, 5]
+    wma_sum = sum(prices[i])
+    wma = sum(w * p for w, p in zip(weights, prices[i])) / wma_sum
+    return wma
+
+def print_transactions(m, k, d, name, owned, prices):
+    trx_count = 0
+    stock_name = []
+    stock_num = []
+    trx = []
+    m1 = 0
+    f = []
+    for i in range(k):
+        f.append(float(prices[i][4]) - calc_wma(k, prices, i))
+    minF = min(f)
+    for i in range(k):
+        if owned[i] > 0 and float(prices[i][4]) > calc_wma(k, prices, i):
+            trx_count += 1
+            stock_name.append(str(name[i]))
+            trx.append("SELL")
+            stock_num.append(owned[i])
+            m1 += owned[i] * float(prices[i][4])
+            owned[i] = owned[0] - stock_num[trx_count - 1]
+        elif float(m) > 0 and int(float(m) / float(prices[i][4])) > 0 and f[i] == minF:
+            trx_count += 1
+            stock_num.append(int(m / float(prices[i][4])))
+            stock_name.append(str(name[i]))
+            trx.append("BUY")
+            owned[i] = stock_num[trx_count - 1]
+            m -= stock_num[trx_count - 1] * float(prices[i][4])
+    m += m1
+    m1 = 0
+    if trx_count > 0:
+        print(trx_count)
+        for i in range(trx_count):
+            print(stock_name[i], trx[i], stock_num[i])
+    else:
+        print(trx_count)
+
+import sys
+input = sys.stdin.read().strip().split('\n')
+
+first_line = input[0].split()
+m = float(first_line[0])
+k = int(first_line[1])
+d = int(first_line[2])
+
+name = []
+owned = []
+prices = []
+
+for i in range(k):
+    stock_info = input[i + 1].split()
+    name.append(stock_info[0])
+    owned.append(int(stock_info[1]))
+    prices.append(list(map(float, stock_info[2:])))
+
+print_transactions(m, k, d, name, owned, prices)
