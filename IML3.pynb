@@ -1,0 +1,7 @@
+import sys
+
+inp = int(float(sys.stdin.readline())*100);
+if inp < 400:
+    print(inp*2/100);
+else:
+    print(8.00);
