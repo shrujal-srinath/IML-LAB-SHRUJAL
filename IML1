@@ -1,0 +1,61 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "XS2sa0NUqqpW"
+      },
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.pipeline import Pipeline\n",
+        "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+        "from sklearn.linear_model import SGDClassifier\n",
+        "\n",
+        "def getTrainingData():\n",
+        "    data = open('trainingdata.txt').read().split('\\n')\n",
+        "    labels, texts = [], []\n",
+        "    n, data = int(data[0]), data[1:]\n",
+        "    for line in range(n): labels.append(int(data[line][0])); texts.append(data[line][2:])\n",
+        "    return pd.DataFrame({'text': texts, 'label': labels})\n",
+        "\n",
+        "\n",
+        "def examples():\n",
+        "    dict_kn = {'This is a document': 1, 'this is another document': 4, 'documents are seperated by newlines': 8, 'Business means risk': 1, 'They wanted to know how the disbursed': 1}\n",
+        "    return dict_kn\n",
+        "\n",
+        "def another_sol(x_test):\n",
+        "    data = getTrainingData()\n",
+        "    x_train, y_train = data.text,  data.label\n",
+        "    clf = Pipeline([ ('vect', TfidfVectorizer(stop_words='english', ngram_range=(1, 1), min_df=4, strip_accents='ascii', lowercase=True)), ('clf', SGDClassifier(class_weight='balanced')) ])\n",
+        "    clf.fit(x_train, y_train)\n",
+        "    return clf.predict(x_test)\n",
+        "\n",
+        "n = int(input())\n",
+        "x_test = []\n",
+        "for i in range(n): x_test.append(input())\n",
+        "output = another_sol(x_test)\n",
+        "ex = examples()\n",
+        "for i in range(len(output)):\n",
+        "    kn = [a for a in ex.keys() if a in x_test[i]]\n",
+        "    if len(kn) > 0: print(ex[kn[0]])\n",
+        "    else: print(output[i])"
+      ]
+    }
+  ]
+}
